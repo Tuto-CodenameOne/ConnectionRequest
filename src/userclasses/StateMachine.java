@@ -4,6 +4,7 @@
 
 package userclasses;
 
+import com.codename1.components.InfiniteProgress;
 import com.codename1.io.ConnectionRequest;
 import com.codename1.io.Log;
 import com.codename1.io.NetworkEvent;
@@ -56,12 +57,19 @@ public class StateMachine extends StateMachineBase {
     protected void beforeMain(Form f) {
         
     }
+    
+    private ConnectionRequest request;
 
     @Override
     protected void onMain_ButtonAction(Component c, ActionEvent event) {
 
         // Call API
-        ConnectionRequest request = new ConnectionRequest();
+        request = new ConnectionRequest();
+        
+        InfiniteProgress ip = new InfiniteProgress();
+        Dialog dlg = ip.showInifiniteBlocking();
+        request.setDisposeOnCompletion(dlg);
+        
         request.setUrl(flickrURL);
         request.setPost(false);
         request.addArgument("format", "rest");
@@ -82,7 +90,10 @@ public class StateMachine extends StateMachineBase {
                 Vector<Element> photos = xmlPhotoElement.getChildrenByTagName("photo");
                 
                 // Remove current image list
-                findImagesContainer().removeAll();
+                if (findImagesContainer(Display.getInstance().getCurrent()).getComponentCount() != 0) {
+                    findImagesContainer(Display.getInstance().getCurrent()).removeAll();
+                }
+                Display.getInstance().getCurrent().repaint();
                 
                 for (Element photo : photos) {
                     String id = photo.getAttribute("id");
