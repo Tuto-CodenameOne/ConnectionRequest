@@ -6,7 +6,6 @@ package userclasses;
 
 import com.codename1.components.InfiniteProgress;
 import com.codename1.io.ConnectionRequest;
-import com.codename1.io.Log;
 import com.codename1.io.NetworkEvent;
 import com.codename1.io.NetworkManager;
 import com.codename1.io.services.ImageDownloadService;
@@ -17,7 +16,6 @@ import com.codename1.ui.util.Resources;
 import com.codename1.xml.Element;
 import com.codename1.xml.XMLParser;
 import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Vector;
@@ -33,11 +31,13 @@ public class StateMachine extends StateMachineBase {
     
     public final static String apiKeyArg = "api_key";
     public final static String apiKeyVal = "233de5dbc013387a9c0652b04f29fc2b";
-    public final static String searchArg = "text";
-    public final static String apiSecretArg = "api_sig";
-    public final static String apiSecretVal = "4602c6e835c05bda";
+    
     public final static String methodArg = "method";
     public final static String methodVal = "flickr.photos.search";
+    
+    public final static String searchArg = "text";
+    public final static String resultNumberArg = "text";
+    public final static String resultNumberVal = "10";
     
     public StateMachine(String resFile) {
         super(resFile);
@@ -51,29 +51,26 @@ public class StateMachine extends StateMachineBase {
      */
     protected void initVars(Resources res) {
     }
-
-
-    @Override
-    protected void beforeMain(Form f) {
-        
-    }
     
     private ConnectionRequest request;
+    private Form mainForm;
 
     @Override
     protected void onMain_ButtonAction(Component c, ActionEvent event) {
 
-        // Call API
+        mainForm = Display.getInstance().getCurrent();
+        
         request = new ConnectionRequest();
         
+        // Show loading
         InfiniteProgress ip = new InfiniteProgress();
         Dialog dlg = ip.showInifiniteBlocking();
         request.setDisposeOnCompletion(dlg);
         
+        // Call arguments
         request.setUrl(flickrURL);
         request.setPost(false);
-        request.addArgument("format", "rest");
-        request.addArgument("per_page", "10");
+        request.addArgument(resultNumberArg, resultNumberVal);
         request.addArgument(methodArg, methodVal);
         request.addArgument(apiKeyArg, apiKeyVal);
         request.addArgument(searchArg, findSearchInput().getText());
@@ -83,6 +80,8 @@ public class StateMachine extends StateMachineBase {
             public void actionPerformed(ActionEvent evt) {
                 NetworkEvent netEvt = (NetworkEvent) evt;
                 byte[] dataArray = (byte[]) netEvt.getMetaData();
+                
+                // Results parsing
                 XMLParser parser = new XMLParser();
                 InputStream is = new ByteArrayInputStream(dataArray);
                 Element xmlElement = parser.parse(new InputStreamReader(is));
@@ -90,10 +89,11 @@ public class StateMachine extends StateMachineBase {
                 Vector<Element> photos = xmlPhotoElement.getChildrenByTagName("photo");
                 
                 // Remove current image list
-                if (findImagesContainer(Display.getInstance().getCurrent()).getComponentCount() != 0) {
-                    findImagesContainer(Display.getInstance().getCurrent()).removeAll();
+                Container imageCont = findImagesContainer(mainForm);
+                if (imageCont.getComponentCount() != 0) {
+                    imageCont.removeAll();
                 }
-                Display.getInstance().getCurrent().repaint();
+                mainForm.repaint();
                 
                 for (Element photo : photos) {
                     String id = photo.getAttribute("id");
@@ -102,9 +102,8 @@ public class StateMachine extends StateMachineBase {
                     String server = photo.getAttribute("server");
                     Label label = new Label();
                     ImageDownloadService.createImageToStorage("http://farm" + farm + ".staticflickr.com/" + server + "/" + id + "_" + secret + ".jpg", label, id, null);
-                    findImagesContainer().addComponent(label);
+                    imageCont.addComponent(label);
                 }
-                Log.p(xmlElement.toString());
             }
         });
         

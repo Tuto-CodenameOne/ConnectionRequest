@@ -34,6 +34,7 @@ public abstract class StateMachineBase extends UIBuilder {
         initVars();
         UIBuilder.registerCustomComponent("Button", com.codename1.ui.Button.class);
         UIBuilder.registerCustomComponent("Form", com.codename1.ui.Form.class);
+        UIBuilder.registerCustomComponent("Label", com.codename1.ui.Label.class);
         UIBuilder.registerCustomComponent("TextField", com.codename1.ui.TextField.class);
         UIBuilder.registerCustomComponent("Container", com.codename1.ui.Container.class);
         if(loadTheme) {
@@ -68,6 +69,7 @@ public abstract class StateMachineBase extends UIBuilder {
         initVars();
         UIBuilder.registerCustomComponent("Button", com.codename1.ui.Button.class);
         UIBuilder.registerCustomComponent("Form", com.codename1.ui.Form.class);
+        UIBuilder.registerCustomComponent("Label", com.codename1.ui.Label.class);
         UIBuilder.registerCustomComponent("TextField", com.codename1.ui.TextField.class);
         UIBuilder.registerCustomComponent("Container", com.codename1.ui.Container.class);
         if(loadTheme) {
@@ -139,6 +141,18 @@ public abstract class StateMachineBase extends UIBuilder {
         com.codename1.ui.Button cmp = (com.codename1.ui.Button)findByName("Button", Display.getInstance().getCurrent());
         if(cmp == null && aboutToShowThisContainer != null) {
             cmp = (com.codename1.ui.Button)findByName("Button", aboutToShowThisContainer);
+        }
+        return cmp;
+    }
+
+    public com.codename1.ui.Label findLabel(Component root) {
+        return (com.codename1.ui.Label)findByName("Label", root);
+    }
+
+    public com.codename1.ui.Label findLabel() {
+        com.codename1.ui.Label cmp = (com.codename1.ui.Label)findByName("Label", Display.getInstance().getCurrent());
+        if(cmp == null && aboutToShowThisContainer != null) {
+            cmp = (com.codename1.ui.Label)findByName("Label", aboutToShowThisContainer);
         }
         return cmp;
     }
