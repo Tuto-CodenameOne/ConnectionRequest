@@ -30,7 +30,7 @@ public class StateMachine extends StateMachineBase {
     public final static String flickrURL = "http://api.flickr.com/services/rest/";
     
     public final static String apiKeyArg = "api_key";
-    public final static String apiKeyVal = "233de5dbc013387a9c0652b04f29fc2b";
+    public final static String apiKeyVal = "API_KEY_HERE";
     
     public final static String methodArg = "method";
     public final static String methodVal = "flickr.photos.search";
