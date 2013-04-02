@@ -36,7 +36,7 @@ public class StateMachine extends StateMachineBase {
     public final static String methodVal = "flickr.photos.search";
     
     public final static String searchArg = "text";
-    public final static String resultNumberArg = "text";
+    public final static String resultNumberArg = "per_page";
     public final static String resultNumberVal = "10";
     
     public StateMachine(String resFile) {
